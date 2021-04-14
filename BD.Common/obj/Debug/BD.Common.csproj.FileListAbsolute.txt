@@ -1,0 +1,11 @@
+E:\project\BDSew\BD.Common\bin\Debug\BD.Common.dll
+E:\project\BDSew\BD.Common\bin\Debug\BD.Common.pdb
+E:\project\BDSew\BD.Common\obj\Debug\BD.Common.csproj.CoreCompileInputs.cache
+E:\project\BDSew\BD.Common\obj\Debug\BD.Common.dll
+E:\project\BDSew\BD.Common\obj\Debug\BD.Common.pdb
+E:\project\BDSew\BD.Common\obj\Debug\BD.Common.csprojAssemblyReference.cache
+E:\project_\BDSew\BD.Common\bin\Debug\BD.Common.dll
+E:\project_\BDSew\BD.Common\bin\Debug\BD.Common.pdb
+E:\project_\BDSew\BD.Common\obj\Debug\BD.Common.csprojAssemblyReference.cache
+E:\project_\BDSew\BD.Common\obj\Debug\BD.Common.dll
+E:\project_\BDSew\BD.Common\obj\Debug\BD.Common.pdb
