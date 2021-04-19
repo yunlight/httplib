@@ -151,33 +151,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="UserControls\MachineStatusCtrl.resx">
-      <DependentUpon>MachineStatusCtrl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\AssistSettingCtrl.resx">
-      <DependentUpon>AssistSettingCtrl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\MachinePrammCtrl.resx">
-      <DependentUpon>MachinePrammCtrl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\SystemPrammCtrl.resx">
-      <DependentUpon>SystemPrammCtrl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\FileManagementCtrl.resx">
-      <DependentUpon>FileManagementCtrl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\MenuCtrl.resx">
-      <DependentUpon>MenuCtrl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\FileViewerCtrl.resx">
-      <DependentUpon>FileViewerCtrl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\EditCtrl.resx">
-      <DependentUpon>EditCtrl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\MainCtrl.resx">
-      <DependentUpon>MainCtrl.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

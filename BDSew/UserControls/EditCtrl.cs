@@ -374,17 +374,31 @@ namespace BDSew
         }
         private void CalculatePoints()
         {
+            dxfMinX = 10000;//模型应该不会有这么大的值
+            dxfMinY = 10000;
+            dxfMaxX = -10000;
+            dxfMaxX = -10000;
+
+            float maxX = Math.Max(Math.Abs(dxfMinX) , Math.Abs(dxfMaxX));
+            float maxY = Math.Max(Math.Abs(dxfMinY), Math.Abs(dxfMaxX));
+
+            float scaleSize = Math.Max(this.middleX / maxX, this.middleY / maxY);
+            scaleSize *= 1.1f;
+
             foreach (var ellipse in circleList)
             {
-                ellipse.ReflushLinePoints((float)StepDistance);
+                ellipse.SetScale(scaleSize);
+                ellipse.ReflushLinePoints((float)StepDistance * scaleSize);
             }
             foreach (var arc in arcList)
             {
-                arc.ReflushLinePoints((float)StepDistance);
+                arc.SetScale(5);
+                arc.ReflushLinePoints((float)StepDistance * scaleSize);
             }
             foreach (var line in lines)
             {
-                line.ReflushLinePoints((float)StepDistance);
+                line.SetScale(5);
+                line.ReflushLinePoints((float)StepDistance * scaleSize);
             }
         }
         private void DrawArc(Graphics g)
@@ -790,8 +804,7 @@ namespace BDSew
             AddArcs();
             AddLines();
             AddPolylines();
-
-            //DocumentCenterScreen();
+            
             CalculatePoints();
         }
 

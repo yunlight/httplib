@@ -8,14 +8,14 @@ namespace BD.Common
     {
         public ArcF(PointF point, SizeF size, float startAngle, float sweepAngle, bool isDottedLine)
         {
-            this.Rectangle = new RectangleF() { Location = point, Size = size };
             this.StartAngle = startAngle;
             this.SweepAngle = sweepAngle;
 
             this.IsDottedLine = isDottedLine;
-            this.Radius = size.Width / 2;
-            this.Center = new PointF(point.X + this.Radius, point.Y + this.Radius);
-            this.Scale = 1f;
+            this._Radius = size.Width / 2;
+            this._Center = new PointF(point.X + this._Radius, point.Y + this._Radius);
+            this._Rectangle = new RectangleF() { Location = point, Size = size };
+            this.SetScale(1f);
         }
         public ArcF(float x, float y, float width, float height, float startAngle, float sweepAngle, bool isDottedLine)
             : this(new PointF(x, y), new SizeF(width, height), startAngle, sweepAngle, isDottedLine)
@@ -30,14 +30,6 @@ namespace BD.Common
 
         public override void ReflushLinePoints(float lineStep)
         {
-            List<LineF> lineFs = new List<LineF>();
-            List<PointF> pointFs = new List<PointF>();
-
-            // 绕行弧度值
-            float angle = 2 * (float)(Math.Asin(((double)lineStep / 2) / Radius));
-            int count = (int)((Math.Abs(SweepAngle) / 180 * Math.PI) / angle);
-            double yushu = (Math.Abs(SweepAngle) / 180 * Math.PI) % angle;
-
             // 起始弧度
             float startRadian = (float)radPOX(this.StartAngle);
             float endRadian = startRadian;
@@ -50,26 +42,51 @@ namespace BD.Common
                 endRadian += (float)radPOX(this.SweepAngle);
             }
 
-            PointF startPoint = this.RotatePoint(new PointF(this.Center.X + this.Radius, this.Center.Y), this.Center, startRadian, true);
-            PointF endPoint = this.RotatePoint(new PointF(this.Center.X + this.Radius, this.Center.Y), this.Center, endRadian, true);
-            pointFs.Add(startPoint);
-            for (int i = 0; i < count; i++) // 循环次数 n-1
-            {
-                PointF nextPoint = RotatePoint(startPoint, this.Center, angle, false);
-                lineFs.Add(new LineF(startPoint.X, startPoint.Y, nextPoint.X, nextPoint.Y, IsDottedLine));
+            GenLinePoints(this.RotatePoint(new PointF(this.Center.X + this.Radius, this.Center.Y), this.Center, startRadian, true),
+                this.RotatePoint(new PointF(this.Center.X + this.Radius, this.Center.Y), this.Center, endRadian, true), this.SweepAngle, lineStep);
 
-                startPoint = nextPoint;
-                pointFs.Add(nextPoint);
-            }
-            if (yushu > 0.01 && !IsSamePoint(startPoint, endPoint))
-            {
-                lineFs.Add(new LineF(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, IsDottedLine));
 
-                pointFs.Add(endPoint);
-            }
 
-            Lines = lineFs.ToArray();
-            Nodes = pointFs.ToArray();
+            //List<LineF> lineFs = new List<LineF>();
+            //List<PointF> pointFs = new List<PointF>();
+
+            //// 绕行弧度值
+            //float angle = 2 * (float)(Math.Asin(((double)lineStep / 2) / Radius));
+            //int count = (int)((Math.Abs(SweepAngle) / 180 * Math.PI) / angle);
+            //double yushu = (Math.Abs(SweepAngle) / 180 * Math.PI) % angle;
+
+            //// 起始弧度
+            //float startRadian = (float)radPOX(this.StartAngle);
+            //float endRadian = startRadian;
+            //if (this.SweepAngle > 0)
+            //{
+            //    endRadian -= (float)radPOX(this.SweepAngle);
+            //}
+            //else
+            //{
+            //    endRadian += (float)radPOX(this.SweepAngle);
+            //}
+
+            //PointF startPoint = this.RotatePoint(new PointF(this.Center.X + this.Radius, this.Center.Y), this.Center, startRadian, true);
+            //PointF endPoint = this.RotatePoint(new PointF(this.Center.X + this.Radius, this.Center.Y), this.Center, endRadian, true);
+            //pointFs.Add(startPoint);
+            //for (int i = 0; i < count; i++) // 循环次数 n-1
+            //{
+            //    PointF nextPoint = RotatePoint(startPoint, this.Center, angle, false);
+            //    lineFs.Add(new LineF(startPoint.X, startPoint.Y, nextPoint.X, nextPoint.Y, IsDottedLine));
+
+            //    startPoint = nextPoint;
+            //    pointFs.Add(nextPoint);
+            //}
+            //if (yushu > 0.01 && !IsSamePoint(startPoint, endPoint))
+            //{
+            //    lineFs.Add(new LineF(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, IsDottedLine));
+
+            //    pointFs.Add(endPoint);
+            //}
+
+            //Lines = lineFs.ToArray();
+            //Nodes = pointFs.ToArray();
         }
 
         public bool IsSamePoint(PointF pint1, PointF pint2)
@@ -88,9 +105,6 @@ namespace BD.Common
                 return f2 - f1 < 0.1f;
             }
         }
-
-        public LineF[] Lines { get; private set; }
-
-        public PointF[] Nodes { get; private set; }
+         
     }
 }
