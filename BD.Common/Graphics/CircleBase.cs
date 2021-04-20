@@ -95,12 +95,12 @@ namespace BD.Common
 
             double perimeter = 2 * Math.PI * this.Radius * (Math.Abs(angle) / 360); // 周长
             int count = (int)Math.Ceiling(perimeter / lineStep);
-            double angleStep = angle / count;
+            double angleStep = radPOX(angle / count);
             PointF nextStepPoint = RotatePoint(startPoint, this.Center, angleStep);
             while (Distance(startPoint, nextStepPoint) > lineStep)
             {
                 count++;
-                angleStep = angle / count;
+                angleStep = radPOX(angle / count);
                 nextStepPoint = RotatePoint(startPoint, this.Center, angleStep);
             }
 

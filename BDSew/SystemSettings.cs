@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace BDSew
 {
@@ -20,6 +21,12 @@ namespace BDSew
         private SystemSettings()
         {
             this.ReadSystemSettings();
+            this.Init();
+        }
+
+        private void Init()
+        {
+            listDashLineTypeName.Add("ACAD_ISO03W100");
         }
 
         /// <summary>
@@ -40,16 +47,14 @@ namespace BDSew
             return true;
         }
 
-
-
         private void ReadSystemSettings()
         {
             IsUseRangeSetting = true;
 
-            XLeft = 60;
-            XRight = 60;
-            YUp = 110;
-            YDown = 110;
+            XLeft = 100;
+            XRight = 100;
+            YUp = 200;
+            YDown = 200;
             PasswordStr = "123456";
             MinimumStitch = 0.1f;
         }
@@ -66,5 +71,13 @@ namespace BDSew
         {
             throw new NotImplementedException();
         }
+
+
+        List<string> listDashLineTypeName = new List<string>();
+        public bool IsDashLine(string lineTypeName)
+        {
+            return listDashLineTypeName.Contains(lineTypeName);
+        }
+
     }
 }

@@ -34,7 +34,7 @@ namespace BD.Common
 
         public void ReflushLinePoints(float lineStep)
         {
-            lineStep = lineStep * this.Scale;
+            lineStep = lineStep;
 
             List<LineF> lineFs = new List<LineF>();
             List<PointF> pointFs = new List<PointF>();

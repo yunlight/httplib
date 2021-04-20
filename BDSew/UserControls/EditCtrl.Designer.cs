@@ -47,6 +47,8 @@ namespace BDSew
             this.btnYuanHu = new System.Windows.Forms.Button();
             this.txtStepDistance = new System.Windows.Forms.TextBox();
             this.pnlMiddleBotton = new System.Windows.Forms.Panel();
+            this.btnModifyAngle = new System.Windows.Forms.Button();
+            this.tbxAngle = new System.Windows.Forms.TextBox();
             this.btnNextStep = new System.Windows.Forms.Button();
             this.pnlRight = new System.Windows.Forms.Panel();
             this.btnZoomOut = new System.Windows.Forms.Button();
@@ -71,8 +73,6 @@ namespace BDSew
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnDeleteLineStep = new System.Windows.Forms.Button();
             this.pnlbotton = new System.Windows.Forms.Panel();
-            this.tbxAngle = new System.Windows.Forms.TextBox();
-            this.btnModifyAngle = new System.Windows.Forms.Button();
             this.pnlMiddleBotton.SuspendLayout();
             this.pnlRight.SuspendLayout();
             this.pnlbotton.SuspendLayout();
@@ -141,6 +141,7 @@ namespace BDSew
             this.btnCancelCollection.TabIndex = 31;
             this.btnCancelCollection.Text = "取消采集";
             this.btnCancelCollection.UseVisualStyleBackColor = true;
+            this.btnCancelCollection.Click += new System.EventHandler(this.btnCancelCollection_Click);
             // 
             // btnMoveLineStep
             // 
@@ -171,6 +172,7 @@ namespace BDSew
             this.btnGenGraphics.TabIndex = 28;
             this.btnGenGraphics.Text = "生成图形";
             this.btnGenGraphics.UseVisualStyleBackColor = true;
+            this.btnGenGraphics.Click += new System.EventHandler(this.btnGenGraphics_Click);
             // 
             // btnCenter
             // 
@@ -281,6 +283,26 @@ namespace BDSew
             this.pnlMiddleBotton.Size = new System.Drawing.Size(449, 72);
             this.pnlMiddleBotton.TabIndex = 15;
             // 
+            // btnModifyAngle
+            // 
+            this.btnModifyAngle.Location = new System.Drawing.Point(372, 11);
+            this.btnModifyAngle.Name = "btnModifyAngle";
+            this.btnModifyAngle.Size = new System.Drawing.Size(50, 50);
+            this.btnModifyAngle.TabIndex = 34;
+            this.btnModifyAngle.Text = "修改角度";
+            this.btnModifyAngle.UseVisualStyleBackColor = true;
+            // 
+            // tbxAngle
+            // 
+            this.tbxAngle.BackColor = System.Drawing.SystemColors.Highlight;
+            this.tbxAngle.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.tbxAngle.ForeColor = System.Drawing.Color.Transparent;
+            this.tbxAngle.Location = new System.Drawing.Point(311, 23);
+            this.tbxAngle.Name = "tbxAngle";
+            this.tbxAngle.Size = new System.Drawing.Size(60, 29);
+            this.tbxAngle.TabIndex = 33;
+            this.tbxAngle.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // btnNextStep
             // 
             this.btnNextStep.Location = new System.Drawing.Point(6, 203);
@@ -356,6 +378,7 @@ namespace BDSew
             this.btnCollection.TabIndex = 8;
             this.btnCollection.Text = "采集";
             this.btnCollection.UseVisualStyleBackColor = true;
+            this.btnCollection.Click += new System.EventHandler(this.btnCollection_Click);
             // 
             // btnSaveAs
             // 
@@ -582,26 +605,6 @@ namespace BDSew
             this.pnlbotton.Name = "pnlbotton";
             this.pnlbotton.Size = new System.Drawing.Size(784, 70);
             this.pnlbotton.TabIndex = 11;
-            // 
-            // tbxAngle
-            // 
-            this.tbxAngle.BackColor = System.Drawing.SystemColors.Highlight;
-            this.tbxAngle.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.tbxAngle.ForeColor = System.Drawing.Color.Transparent;
-            this.tbxAngle.Location = new System.Drawing.Point(311, 23);
-            this.tbxAngle.Name = "tbxAngle";
-            this.tbxAngle.Size = new System.Drawing.Size(60, 29);
-            this.tbxAngle.TabIndex = 33;
-            this.tbxAngle.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // btnModifyAngle
-            // 
-            this.btnModifyAngle.Location = new System.Drawing.Point(372, 11);
-            this.btnModifyAngle.Name = "btnModifyAngle";
-            this.btnModifyAngle.Size = new System.Drawing.Size(50, 50);
-            this.btnModifyAngle.TabIndex = 34;
-            this.btnModifyAngle.Text = "修改角度";
-            this.btnModifyAngle.UseVisualStyleBackColor = true;
             // 
             // EditCtrl
             // 

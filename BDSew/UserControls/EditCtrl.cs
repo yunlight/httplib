@@ -22,12 +22,13 @@ namespace BDSew
 
         LinesTypeEnum DrawLineType = LinesTypeEnum.DottedLine;
         private MoveTypeEnum MoveType;
+
+        float scaleSize = 1;
         private float StepDistance = 3.0f;
-        private int MoveSpeed = 200;
-        private int DefaultAreaSize = 1000;
+        private float LineStep { get { return StepDistance * scaleSize; } }
+        private int MoveSpeed = 10; 
         private int stepIndex = 0;
 
-        private float scale = 1f;
         private int vertexsPointWidth = 1;
         private int vertexsPointHeight = 1;
         private int cursorWidth = 10;
@@ -37,7 +38,7 @@ namespace BDSew
         Pen penAxis = Pens.Silver;
         Pen penCursor = new Pen(Color.White, 1) { DashStyle = System.Drawing.Drawing2D.DashStyle.Solid };
         Pen penLines = Pens.White;
-        Pen penDottedLines = new Pen(Color.White, 1) { DashStyle = System.Drawing.Drawing2D.DashStyle.Custom, DashPattern = new float[] { 1, 1 } };
+        Pen penDottedLines = new Pen(Color.White, 1) { DashStyle = System.Drawing.Drawing2D.DashStyle.Custom, DashPattern = new float[] { 5, 5 } };
         Pen penPoints = new Pen(Color.White, 1) { DashStyle = System.Drawing.Drawing2D.DashStyle.Solid };
         Pen penCollectionPoints = new Pen(Color.Red, 1) { DashStyle = System.Drawing.Drawing2D.DashStyle.Solid };
 
@@ -63,19 +64,17 @@ namespace BDSew
         private int middleX { get { return this.pnlMiddle.Width / 2; } }
         private int middleY { get { return this.pnlMiddle.Height / 2; } }
         private PointF currentCusor { get; set; }
-        // 走斜线
-        private float MoveHypotenuse { get { return (float)(Math.Sqrt((double)(StepDistance * StepDistance) / 2) / DefaultAreaSize * this.pnlMiddle.Width); } }
-        // 走直线
-        private float MoveStraightLine { get { return ((float)StepDistance / DefaultAreaSize * this.pnlMiddle.Width); } }
 
-        private float minX { get { return -this.middleX + StepDistance; } }
-        private float minY { get { return -this.middleY + StepDistance; } }
-        private float maxX { get { return this.middleX - StepDistance; } }
-        private float maxY { get { return this.middleY - StepDistance; } }
+        private float MoveStepLength { get { return 0.1f; } }
+
+        private float minX { get { return -this.middleX + LineStep; } }
+        private float minY { get { return -this.middleY + LineStep; } }
+        private float maxX { get { return this.middleX - LineStep; } }
+        private float maxY { get { return this.middleY - LineStep; } }
 
 
-        System.Drawing.Point pointMin { get { return new System.Drawing.Point(0, 0); } }
-        System.Drawing.Point pointMax { get { return new System.Drawing.Point(this.pnlMiddle.Width, this.pnlMiddle.Height); } }
+        System.Drawing.Point pointMin { get { return new System.Drawing.Point(-this.middleX, -this.middleY); } }
+        System.Drawing.Point pointMax { get { return new System.Drawing.Point(this.middleX, this.middleY); } }
 
         private Size middleSize;
         private Size MiddleSize { get { if (middleSize == null || middleSize.IsEmpty) { middleSize = new Size(middleX, middleY); } return middleSize; } }
@@ -142,10 +141,9 @@ namespace BDSew
 
         private void ResetToOrigin()
         {
-            System.Drawing.Point centerP = this.PointToScreen(new System.Drawing.Point(this.pnlMiddle.Location.X, this.pnlMiddle.Location.Y));
-            MoveMouseToPoint(centerP);
-            currentCusor = this.PointToClient(centerP);
-            currentCusor = currentCusor - new Size(this.pnlMiddle.Location.X, this.pnlMiddle.Location.Y);
+            MoveMouseToPoint(this.PointToScreen(new System.Drawing.Point(this.pnlMiddle.Location.X + this.middleX, this.pnlMiddle.Location.Y + this.middleY)));
+
+            currentCusor = new PointF(0, 0);
             Repaint();
         }
 
@@ -240,7 +238,7 @@ namespace BDSew
 
             g.Clip = new Region(clientRectangle);
             g.TranslateTransform(this.middleX, this.middleY);
-            g.ScaleTransform(scale, scale);
+            //g.ScaleTransform(0, 0);
             // 设置插值模式
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Bicubic;
             // 设置平滑模式
@@ -250,18 +248,18 @@ namespace BDSew
 
         private void DrawAxis(Graphics g)
         {
-            g.DrawLine(penAxis, -this.middleX / scale, 0, this.middleX / scale, 0);
-            g.DrawLine(penAxis, 0, -this.middleY / scale, 0, this.middleY / scale); 
+            g.DrawLine(penAxis, -this.middleX, 0, this.middleX, 0);
+            g.DrawLine(penAxis, 0, -this.middleY, 0, this.middleY);
         }
 
         #region 绘制文字
 
         private void DrawStrings(Graphics g)
         {
-            g.DrawString(GetCusorX(), fontString, textBrush, this.middleX / scale - 10 * fontString.Size, (StartPositionY - this.middleY) / scale);
-            g.DrawString(GetCusorY(), fontString, textBrush, this.middleX / scale - 10 * fontString.Size, (StartPositionY - this.middleY) / scale + FontDistanceY);
-            g.DrawString(GetAngle(),  fontString, textBrush, this.middleX / scale - 10 * fontString.Size, (StartPositionY - this.middleY) / scale + FontDistanceY * 2);
-            g.DrawString(GetSpeed(),  fontString, textBrush, this.middleX / scale - 10 * fontString.Size, (StartPositionY - this.middleY) / scale + FontDistanceY * 3);
+            g.DrawString(GetCusorX(), fontString, textBrush, this.middleX - 10 * fontString.Size, (StartPositionY - this.middleY));
+            g.DrawString(GetCusorY(), fontString, textBrush, this.middleX - 10 * fontString.Size, (StartPositionY - this.middleY) + FontDistanceY);
+            g.DrawString(GetAngle(), fontString, textBrush, this.middleX - 10 * fontString.Size, (StartPositionY - this.middleY) + FontDistanceY * 2);
+            g.DrawString(GetSpeed(), fontString, textBrush, this.middleX - 10 * fontString.Size, (StartPositionY - this.middleY) + FontDistanceY * 3);
         }
 
         private float GetCusorPointX
@@ -303,12 +301,12 @@ namespace BDSew
 
         private string GetCusorX()
         {
-            return string.Format("   X:" + ((double)(((new PointF(GetCusorPointX, 0)) - MiddleSize).X) * DefaultAreaSize / this.pnlMiddle.Width / 10).ToString("f1"));
+            return string.Format("   X:" + (GetCusorPointX / this.scaleSize).ToString("f1"));
         }
 
         private string GetCusorY()
         {
-            return string.Format("   Y:" + ((double)(((new PointF(0, GetCusorPointY)) - MiddleSize).Y) * DefaultAreaSize / this.pnlMiddle.Height / 10).ToString("f1"));
+            return string.Format("   Y:" +  (GetCusorPointY / this.scaleSize).ToString("f1"));
         }
 
         private string GetAngle()
@@ -372,33 +370,23 @@ namespace BDSew
                 });
             }
         }
+
         private void CalculatePoints()
-        {
-            dxfMinX = 10000;//模型应该不会有这么大的值
-            dxfMinY = 10000;
-            dxfMaxX = -10000;
-            dxfMaxX = -10000;
-
-            float maxX = Math.Max(Math.Abs(dxfMinX) , Math.Abs(dxfMaxX));
-            float maxY = Math.Max(Math.Abs(dxfMinY), Math.Abs(dxfMaxX));
-
-            float scaleSize = Math.Max(this.middleX / maxX, this.middleY / maxY);
-            scaleSize *= 1.1f;
-
+        { 
             foreach (var ellipse in circleList)
             {
                 ellipse.SetScale(scaleSize);
-                ellipse.ReflushLinePoints((float)StepDistance * scaleSize);
+                ellipse.ReflushLinePoints(LineStep);
             }
             foreach (var arc in arcList)
             {
-                arc.SetScale(5);
-                arc.ReflushLinePoints((float)StepDistance * scaleSize);
+                arc.SetScale(scaleSize);
+                arc.ReflushLinePoints(LineStep);
             }
             foreach (var line in lines)
             {
-                line.SetScale(5);
-                line.ReflushLinePoints((float)StepDistance * scaleSize);
+                line.SetScale(scaleSize);
+                line.ReflushLinePoints(LineStep);
             }
         }
         private void DrawArc(Graphics g)
@@ -533,42 +521,42 @@ namespace BDSew
                 case MoveTypeEnum.MoveLeftUp:
                     if (currentCusor.X < minX || currentCusor.Y < minY) return;
 
-                    currentCusor += new SizeF(-MoveHypotenuse, -MoveHypotenuse);
+                    currentCusor += new SizeF(-MoveStepLength, -MoveStepLength);
                     break;
                 case MoveTypeEnum.MoveUp:
                     if (currentCusor.Y < minY) return;
 
-                    currentCusor += new SizeF(0, -MoveStraightLine);
+                    currentCusor += new SizeF(0, -MoveStepLength);
                     break;
                 case MoveTypeEnum.MoveRightUp:
                     if (currentCusor.X > maxX || currentCusor.Y < minY) return;
 
-                    currentCusor += new SizeF(MoveHypotenuse, -MoveHypotenuse);
+                    currentCusor += new SizeF(MoveStepLength, -MoveStepLength);
                     break;
                 case MoveTypeEnum.MoveRight:
                     if (currentCusor.X > maxX) return;
 
-                    currentCusor += new SizeF(MoveStraightLine, 0);
+                    currentCusor += new SizeF(MoveStepLength, 0);
                     break;
                 case MoveTypeEnum.MoveRightDown:
                     if (currentCusor.X > maxX || currentCusor.Y > maxY) return;
 
-                    currentCusor += new SizeF(MoveHypotenuse, MoveHypotenuse);
+                    currentCusor += new SizeF(MoveStepLength, MoveStepLength);
                     break;
                 case MoveTypeEnum.MoveDown:
                     if (currentCusor.Y > maxY) return;
 
-                    currentCusor += new SizeF(0, MoveStraightLine);
+                    currentCusor += new SizeF(0, MoveStepLength);
                     break;
                 case MoveTypeEnum.MoveLeftDown:
                     if (currentCusor.X < minX || currentCusor.Y > maxY) return;
 
-                    currentCusor += new SizeF(-MoveHypotenuse, MoveHypotenuse);
+                    currentCusor += new SizeF(-MoveStepLength, MoveStepLength);
                     break;
                 case MoveTypeEnum.MoveLeft:
                     if (currentCusor.X < minX) return;
 
-                    currentCusor += new SizeF(-MoveStraightLine, 0);
+                    currentCusor += new SizeF(-MoveStepLength, 0);
                     break;
             }
             Repaint();
@@ -776,7 +764,7 @@ namespace BDSew
             if (fi != null && fi.Exists && fi.Extension == ".dxf")
             {
                 dxf = DxfDocument.Load(fi.FullName);
-                AddGraph();
+                AddGraphics();
 
                 pnlMiddle.Invalidate();
             }
@@ -787,27 +775,53 @@ namespace BDSew
         private float dxfMaxX { get; set; }
         private float dxfMaxY { get; set; }
 
-        void AddGraph()
+        void AddGraphics()
         {
             dxfMinX = 10000;//模型应该不会有这么大的值
             dxfMinY = 10000;
             dxfMaxX = -10000;
             dxfMaxX = -10000;
-
-            circleList.Clear();
-            arcList.Clear();
-            lines.Clear();
-            pointFs.Clear();
+            ClearGraphics();
 
             AddCircles();
             AddEllipses();
             AddArcs();
             AddLines();
             AddPolylines();
-            
+
+            if (VerifyPointNotInArea())
+            {
+                ClearGraphics();
+
+                MessageBox.Show(string.Format(@"图形大小超出界限，
+ 当前限定大小 X [{0} * {1}], Y [{2} * {3}], 
+ 实际图像大小 X [{4} * {5}], Y [{6} * {7}]",
+                   -SystemSettings.Instance.XLeft, SystemSettings.Instance.XRight, -SystemSettings.Instance.YUp, SystemSettings.Instance.YDown,
+                   dxfMinX.ToString("f1"), dxfMaxX.ToString("f1"), dxfMinY.ToString("f1"), dxfMaxY.ToString("f1")));
+            }
+            ChangeScaleByInputFile();
+
             CalculatePoints();
         }
 
+        private void ChangeScaleByInputFile()
+        {
+            float maxX = Math.Max(Math.Abs(dxfMinX), Math.Abs(dxfMaxX));
+            float maxY = Math.Max(Math.Abs(dxfMinY), Math.Abs(dxfMaxY));
+            if (maxX == 0) maxX = this.middleX;
+            if (maxY == 0) maxY = this.middleY;
+
+            scaleSize = Math.Max(this.middleX / maxX, this.middleY / maxY);
+            scaleSize /= 1.5f;
+        }
+
+        private void ClearGraphics()
+        {
+            circleList.Clear();
+            arcList.Clear();
+            lines.Clear();
+            pointFs.Clear();
+        }
 
         private void AddCircles()
         {
@@ -946,6 +960,14 @@ namespace BDSew
             }
         }
 
+
+        private bool VerifyPointNotInArea()
+        {
+            return dxfMinX < -SystemSettings.Instance.XLeft || dxfMaxX > SystemSettings.Instance.XRight ||
+                dxfMinY < -SystemSettings.Instance.YUp || dxfMaxY > SystemSettings.Instance.YDown;
+        }
+
+
         private float ConvertToGdiX(double cadX)
         {
             return (float)cadX;
@@ -963,18 +985,19 @@ namespace BDSew
         {
             if (obj.Linetype.Name == Linetype.ByLayer.Name)
             {
-                return obj.Layer.Name == "虚线";
+                return SystemSettings.Instance.IsDashLine(obj.Layer.Linetype.Name);
             }
             if (obj.Linetype.Name == Linetype.ByBlock.Name)
             {
-                return obj.Owner.Layer.Name == "虚线";
+                return SystemSettings.Instance.IsDashLine(obj.Owner.Layer.Linetype.Name);
             }
             return DashOrDotLineType(obj.Linetype);
         }
 
         private bool DashOrDotLineType(Linetype lineType)
         {
-            return lineType.Name == Linetype.Dot.Name || lineType.Name == Linetype.DashDot.Name || lineType.Name == Linetype.Dashed.Name;
+            return lineType.Name == Linetype.Dot.Name || lineType.Name == Linetype.DashDot.Name || lineType.Name == Linetype.Dashed.Name ||
+                SystemSettings.Instance.IsDashLine(lineType.Name);
         }
 
 
@@ -1055,21 +1078,290 @@ namespace BDSew
 
         private void btnZoomIn_Click(object sender, EventArgs e)
         {
-            this.scale += 0.1f;
+            this.scaleSize += 0.1f;
+            this.CalculatePoints();
             this.Repaint();
         }
 
         private void btnCenter_Click(object sender, EventArgs e)
         {
-            this.scale = 1f;
+            this.scaleSize = 1f;
+            this.CalculatePoints();
             this.Repaint();
         }
 
         private void btnZoomOut_Click(object sender, EventArgs e)
         {
-
-            this.scale -= 0.1f;
+            this.scaleSize -= 0.1f;
+            this.CalculatePoints();
             this.Repaint();
+        }
+
+        private void btnCollection_Click(object sender, EventArgs e)
+        {
+            collectionPoints.Enqueue(currentCusor);
+        }
+
+        private void btnGenGraphics_Click(object sender, EventArgs e)
+        {
+            DrawGraphics();
+            CalculatePoints();
+            Repaint();
+        }
+
+        #region DrawGraphics
+
+        private void DrawGraphics()
+        {
+            switch (DrawLineType)
+            {
+                case LinesTypeEnum.DottedLine:
+                    GenDottedLinePoints();
+                    break;
+                case LinesTypeEnum.Line:
+                    GenLinePoints();
+                    break;
+                case LinesTypeEnum.YuanHu:
+                    GenYuanHuPoints();
+                    break;
+                case LinesTypeEnum.Yuan:
+                    GenYuanPoints();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void GenDottedLinePoints()
+        {
+            PointF lastP = new PointF();
+            while (collectionPoints.Count > 0)
+            {
+                PointF pFrom;
+                if (lastP.IsEmpty)
+                {
+                    collectionPoints.TryDequeue(out pFrom);
+                    if (pFrom.IsEmpty)
+                    {
+                        continue;
+                    }
+                    lastP = pFrom;
+                }
+                PointF pTo;
+                collectionPoints.TryDequeue(out pTo);
+                if (pTo.IsEmpty)
+                {
+                    continue;
+                }
+
+                lines.Add(new LineF(lastP, pTo, true));
+                lastP = pTo; ;
+            }
+        }
+
+        private void GenLinePoints()
+        {
+            PointF lastP = new PointF();
+            while (collectionPoints.Count > 0)
+            {
+                PointF pFrom;
+                if (lastP.IsEmpty)
+                {
+                    collectionPoints.TryDequeue(out pFrom);
+                    if (pFrom.IsEmpty)
+                    {
+                        continue;
+                    }
+                    lastP = pFrom;
+                }
+                PointF pTo;
+                collectionPoints.TryDequeue(out pTo);
+                if (pTo.IsEmpty)
+                {
+                    continue;
+                }
+
+                lines.Add(new LineF(lastP, pTo, false));
+                lastP = pTo; ;
+            }
+        }
+
+
+        private void GenYuanHuPoints()
+        {
+            while (collectionPoints.Count >= 3)
+            {
+                PointF p1, p2, p3;
+                collectionPoints.TryDequeue(out p1);
+                collectionPoints.TryDequeue(out p2);
+                collectionPoints.TryDequeue(out p3);
+
+                GenArcFromThreePoint(p1.X, p1.Y, p2.X, p2.Y, p3.X, p3.Y);
+            }
+        }
+
+        void GenArcFromThreePoint(float x1, float y1, float x2, float y2, float x3, float y3)
+        {
+            double a = x1 - x2;
+            double b = y1 - y2;
+            double c = x1 - x3;
+            double d = y1 - y3;
+            double e = ((x1 * x1 - x2 * x2) + (y1 * y1 - y2 * y2)) / 2.0;
+            double f = ((x1 * x1 - x3 * x3) + (y1 * y1 - y3 * y3)) / 2.0;
+            double det = b * c - a * d;
+
+            if (Math.Abs(det) > 0.001)
+            {
+                //x0,y0为计算得到的原点
+                double x0 = -(d * e - b * f) / det;
+                double y0 = -(a * f - c * e) / det;
+
+                double radius = Math.Sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+
+                double angle1;
+                double angle2;
+                double angle3;
+
+                double sinValue1;
+                double cosValue1;
+                double sinValue2;
+                double cosValue2;
+                double sinValue3;
+                double cosValue3;
+
+                sinValue1 = (y1 - y0) / radius;
+                cosValue1 = (x1 - x0) / radius;
+                if (cosValue1 >= 0.99999) cosValue1 = 0.99999;
+                if (cosValue1 <= -0.99999) cosValue1 = -0.99999;
+                angle1 = Math.Acos(cosValue1);
+                angle1 = angle1 / 3.14 * 180;
+                if (sinValue1 < -0.05) angle1 = 360 - angle1;
+
+                sinValue2 = (y2 - y0) / radius;
+                cosValue2 = (x2 - x0) / radius;
+                if (cosValue2 >= 0.99999) cosValue2 = 0.99999;
+                if (cosValue2 <= -0.99999) cosValue2 = -0.99999;
+                angle2 = Math.Acos(cosValue2);
+                angle2 = angle2 / 3.14 * 180;
+                if (sinValue2 < -0.05) angle2 = 360 - angle2;
+
+                sinValue3 = (y3 - y0) / radius;
+                cosValue3 = (x3 - x0) / radius;
+                if (cosValue3 >= 0.99999) cosValue3 = 0.99999;
+                if (cosValue3 <= -0.99999) cosValue3 = -0.99999;
+                angle3 = Math.Acos(cosValue3);
+                angle3 = angle3 / 3.14 * 180;
+
+                if (sinValue3 < -0.05) angle3 = 360 - angle3;
+
+                bool PosDown = false;
+                double Delta13;
+                if (angle1 < angle3)
+                {
+                    Delta13 = angle3 - angle1;
+                }
+                else
+                {
+                    Delta13 = angle3 - angle1 + 360;
+                }
+
+                double Delta12;
+                if (angle1 < angle2)
+                {
+                    Delta12 = angle2 - angle1;
+                }
+                else
+                {
+                    Delta12 = angle2 - angle1 + 360;
+                }
+
+                if (Delta13 > Delta12)
+                {
+                    PosDown = true;
+                }
+                else
+                {
+                    PosDown = false;
+                }
+
+                ArcF arcF;
+                if (PosDown)
+                {
+                    if (angle3 > angle1)
+                    {
+                        arcF =  new ArcF(new PointF((float)(x0 - radius), (float)(y0 - radius)), new SizeF((float)(2 * radius), (float)(2 * radius)), (float)(angle3), -(float)(angle3 - angle1), false);
+                        //arcF.SetScale(scaleSize);
+                    }
+                    else
+                    {
+                        arcF = new ArcF(new PointF((float)(x0 - radius), (float)(y0 - radius)), new SizeF((float)(2 * radius), (float)(2 * radius)), (float)(angle3), -(float)(angle3 - angle1 + 360), false);
+                        //arcF.SetScale(scaleSize);
+                    }
+                }
+                else
+                {
+                    if (angle1 > angle3)
+                    {
+                        arcF = new ArcF(new PointF((float)(x0 - radius), (float)(y0 - radius)), new SizeF((float)(2 * radius), (float)(2 * radius)), (float)(angle1), -(float)(angle1 - angle3), false);
+                        //arcF.SetScale(scaleSize);
+                    }
+                    else
+                    {
+                        arcF = new ArcF(new PointF((float)(x0 - radius), (float)(y0 - radius)), new SizeF((float)(2 * radius), (float)(2 * radius)), (float)(angle1), -(float)(angle1 - angle3 + 360), false);
+                        //arcF.SetScale(scaleSize);
+                    }
+                }
+                if(arcF != null)
+                {
+                    arcList.Add(arcF);
+                }
+            }
+        }
+
+        private void GenYuanPoints()
+        {
+            while (collectionPoints.Count >= 3)
+            {
+                PointF p1, p2, p3;
+                collectionPoints.TryDequeue(out p1);
+                collectionPoints.TryDequeue(out p2);
+                collectionPoints.TryDequeue(out p3);
+
+                GenEllipseFromThreePoint(p1.X, p1.Y, p2.X, p2.Y, p3.X, p3.Y);
+                //circleList.Add(new Arc(p1, p2, p3));
+            }
+        }
+        void GenEllipseFromThreePoint(float x1, float y1, float x2, float y2, float x3, float y3)
+        {
+            double a = x1 - x2;
+            double b = y1 - y2;
+            double c = x1 - x3;
+            double d = y1 - y3;
+            double e = ((x1 * x1 - x2 * x2) + (y1 * y1 - y2 * y2)) / 2.0;
+            double f = ((x1 * x1 - x3 * x3) + (y1 * y1 - y3 * y3)) / 2.0;
+            double det = b * c - a * d;
+
+            if (Math.Abs(det) > 0.001)
+            {
+                //x0,y0为计算得到的原点
+                double x0 = -(d * e - b * f) / det;
+                double y0 = -(a * f - c * e) / det;
+
+                double radius = Math.Sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+
+                circleList.Add(new EllipseF((float)(x0 - radius), (float)(y0 - radius), (float)(2 * radius), (float)(2 * radius), false));
+            }
+        }
+
+        #endregion
+
+        private void btnCancelCollection_Click(object sender, EventArgs e)
+        {
+            while (collectionPoints.Count > 0)
+            {
+                PointF pointF;
+                collectionPoints.TryDequeue(out pointF);
+            }
         }
     }
 }
